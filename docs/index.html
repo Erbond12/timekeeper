@@ -8,10 +8,15 @@
     <body>
         <h1>Test2</h1>
         <p>This is a test page.</p>
+        <input id="DBId" placeholder="Enter your DB Id">
         <input id="DBKey" placeholder="Enter your DB key">
         <button onclick="saveCookie()">Save</button>
         <button onclick="getCookie()">Read Cookie</button>
+        <button onclick="fetchPeople()">Read People</button>
         <a href="./html/second_page.html">go to second page</a>
+
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
         <script type="text/javascript" src="js/index.js"></script>
+        
     </body>
 </html>
