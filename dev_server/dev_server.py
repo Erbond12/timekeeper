@@ -2,7 +2,7 @@ from livereload import Server, shell
 from pathlib import Path
 
 # Get the directory ABOVE this file
-project_root = str(Path(__file__).resolve().parent.parent) + '/'
+project_root = '../docs/'
 print(project_root)
 
 server = Server()
