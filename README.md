@@ -1,6 +1,8 @@
 # timekeeper
 
 # Dev:
+Note: Due to github pages the folder with the html files has to be called docs.
+
 Install the requirements_python.txt to have a live server to have check on the cookies (they won't be created if the html runs locally).
 
 After installation just run:
@@ -10,4 +12,4 @@ python3 dev_server.py
 Python will prompt you to go to the server:
 http://127.0.0.1:8000
 (or similar) but you need to add the path to the index.html. So the correct url is:
-http://127.0.0.1:8000/html/indext.html
+http://127.0.0.1:8000/docs/indext.html
