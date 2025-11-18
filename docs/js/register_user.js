@@ -88,8 +88,17 @@ async function saveNameCookie() {
     // Set cookies
     document.cookie = `db_username=${encodeURIComponent(name_input)}; expires=${expireDate}; path=/`;
 
-    document.body.insertAdjacentHTML("beforeend", "<h3>Name (" + name_input + ") erfolgreich gespeichert!<h3>")
-    document.body.insertAdjacentHTML("beforeend", "<img src='../assets/yippie.jpeg'>")
+    const successH3 = document.getElementById("successH3");
+    const successImg = document.getElementById("successImg");
+    const successBtn = document.getElementById("successBtn");
+
+    successH3.textContent = "Name (" + name_input + ") erfolgreich gespeichert";
+    successImg.src = "../assets/yippie.jpeg";
+    successBtn.onclick = () => { 
+        window.location.href='../html/log_time.html';
+    };
+    successBtn.style.display = "block";
+    
 }
 
 async function fetchPeople(project_id, db_key) {

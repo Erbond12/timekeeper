@@ -19,7 +19,7 @@
             <p>Tipp: Die Id findest du unter "Project Settings" > "Data API". Dort siehst du dann eine URL und der erste Teil ist die Id: z.B. https://[Project_id].supabase.co</p>
             <p>Tipp2: Der Schlüssel lässt sich ähnlich finden, nur geht man links in die Kategorie "API Keys" rein unt hat da dann als erstes den anon/ public Schlüssel.</p>
 
-            <button onclick="saveDBCookies()">Speichern</button>
+            <button onclick="saveDBCookies()">Weiter</button>
         </div>
         <div id="get_name" style="display:none">
             <h1>Bitte wähle deinen Namen aus.</h1>
@@ -38,11 +38,14 @@
                 Neuer Name (nicht in Liste).
             </label>
             <br><br>
-            <button onclick="saveNameCookie()">Speichern</button>
+            <button onclick="saveNameCookie()">Weiter</button>
             <br> <br>
 
             <hr>
             <h3>Daten erfolgreich gespeichert!</h3>
+            <h3 id="successH3"></h3>
+            <img id="successImg">
+            <button id="successBtn" style="display:none;">Weiter</button>
         </div>
 
 
