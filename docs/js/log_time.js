@@ -92,6 +92,16 @@ async function processAsyncCalls() {
         console.log("insert complete")
         const loading_label = document.getElementById("loading");
         loading_label.textContent = JSON.stringify(confirm_data[0]);
+
+        // Fetch a random meme
+        fetch('https://meme-api.com/gimme')
+        .then(res => res.json())
+        .then(data => {
+            console.log(data.preview); // meme image URL
+            // Example: set it to an <img> tag
+            document.getElementById('memeImg').src = data.preview[data.preview.length - 1];
+        })
+        .catch(console.error);
     } else {
         console.log(".  Insert failed")
     }
