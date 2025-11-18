@@ -6,14 +6,53 @@
         <title>Test Page</title>
     </head>
     <body>
-        <h1>Test2</h1>
+        <div id="get_project_data">
+            <h1>Deine Log-In Daten sind veraltet.</h1>
+            <p>Bitte gib folgenden die Supabase Projekt-Id und den dazugehörigen Schlüssel ein</p>
+            
+            <label>Projekt-Id: </label>
+            <input id="db_id" placeholder="Die Projekt-Id">
+
+            <label>Projekt-Schlüssel:</label>
+            <input id="db_key" placeholder="Der Projekt-Schlüssel">
+            
+            <p>Tipp: Die Id findest du unter "Project Settings" > "Data API". Dort siehst du dann eine URL und der erste Teil ist die Id: z.B. https://[Project_id].supabase.co</p>
+            <p>Tipp2: Der Schlüssel lässt sich ähnlich finden, nur geht man links in die Kategorie "API Keys" rein unt hat da dann als erstes den anon/ public Schlüssel.</p>
+
+            <button onclick="saveDBCookies()">Speichern</button>
+        </div>
+        <div id="get_name" style="display:none">
+            <h1>Bitte wähle deinen Namen aus.</h1>
+            <p>Es werden im folgenden alle verfügbaren Namen aufgelistet. Falls deiner nicht darunter fällt tippe bitte einen neuen ein</p>
+            <label id="names"></label> 
+            <br><br>
+            <input id="name" placeholder="Dein Name">
+            <button onclick="saveNameCookie()">Speichern</button>
+            <br> <br>
+            <label>
+                <input type="radio" name="name_in_list" value="in_list">
+                Name in List
+            </label>
+
+            <label>
+                <input type="radio" name="name_in_list" value="new_item">
+                Neuer Name (nicht in Liste).
+            </label>
+            <br> <br>
+
+            <hr>
+            <h3>Daten erfolgreich gespeichert!</h3>
+        </div>
+
+
+        <!-- <h1>Test2</h1>
         <p>This is a test page.</p>
         <input id="DBId" placeholder="Enter your DB Id">
         <input id="DBKey" placeholder="Enter your DB key">
         <button onclick="saveCookie()">Save</button>
         <button onclick="getCookie()">Read Cookie</button>
         <button onclick="fetchPeople()">Read People</button>
-        <a href="./html/second_page.html">go to second page</a>
+        <a href="./html/second_page.html">go to second page</a> -->
 
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
         <script type="text/javascript" src="js/index.js"></script>
