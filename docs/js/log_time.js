@@ -48,6 +48,27 @@ async function insertTime(db_name, db_direction, timestamp) {
     return data;
 }
 
+function create_labelString(confirm_data) {
+    const creation_date = new Date(confirm_data[0].created_at);
+    const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false // use 24-hour format
+    };
+    const fullDateTime = new Intl.DateTimeFormat('de-DE', options).format(creation_date) 
+
+    let labelString = ""; 
+    labelString += "Guten Morgen mein Lieber " + confirm_data[0].name;
+    labelString += "\nDatum: " + fullDateTime;
+    labelString += "\nDu hast dich gerade " + (confirm_data[0].direction === "In" ? "Ein-Gecheckt" : "Aus-Gecheckt");
+    labelString += "\nBis später!" 
+    return labelString;
+}
 
 const db_key = getCookie("db_key");
 const db_id = getCookie("db_id");
@@ -90,9 +111,15 @@ async function processAsyncCalls() {
     
     if(direction === saved_direction && ts_now === saved_timestamp) {
         console.log("insert complete")
+        
         const loading_label = document.getElementById("loading");
-        loading_label.textContent = JSON.stringify(confirm_data[0]);
+        
+        const labelString = create_labelString(confirm_data);
+        
+        loading_label.style.whiteSpace = "pre-line"; // to make line breaks with \n visibile
+        loading_label.textContent = labelString;
 
+        
         // Fetch a random meme
         fetch('https://meme-api.com/gimme')
         .then(res => res.json())
