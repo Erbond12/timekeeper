@@ -6,11 +6,24 @@
         <title>This is the second page</title>
     </head>
     <body>
-        <h1>Yiipppii</h1>
-        <p>Hello second page.</p>
-        <input id="DBKey" placeholder="Enter your DB key">
-        <button onclick="saveCookie()">Save</button>
-        <button onclick="getCookie()">Read Cookie</button>
-        <script type="text/javascript" src="../js/second_page.js"></script>
+        <h1>Zeiten Tabelle</h1>
+
+        <table id="table" border="1">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Check-In</th>
+                    <th>Check-Out</th>
+                    <th>Differenz</th>
+                    <th>Pünktlichkeit</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <br>
+        <button >Check-In</button>
+
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script type="text/javascript" src="js/index.js"></script>
     </body>
 </html>

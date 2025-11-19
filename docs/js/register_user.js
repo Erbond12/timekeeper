@@ -111,3 +111,5 @@ async function fetchPeople(project_id, db_key) {
     const { data, error } = await supabaseClient.from('People').select('*');
     return { data, error };
 }
+
+//TODO: if name in cookie is not present -> go back to register_user.html
