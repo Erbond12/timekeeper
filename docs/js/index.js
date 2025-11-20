@@ -38,7 +38,7 @@ async function fetchRows() {
     const {data, error} = await supabaseClient
                 .from('Time')
                 .select('*')
-                .order('created_at', { ascending: false} )
+                .order('created_at', { ascending: true} )
                 .gte('created_at', startDate + 'T00:00:00Z')
                 .lt('created_at', endDate + 'T23:59:59Z');
 
@@ -86,8 +86,10 @@ async function processAsyncCalls() {
             // console.log(row);
 
             start_date = new Date(row.created_at);
-            end_date = new Date(row.check_out);
-
+            end_date = "-";
+            if (row.check_out){
+                end_date = new Date(row.check_out);
+            }
             // creat more asthetic date for table
             options = {
                 weekday: "short",
@@ -99,7 +101,10 @@ async function processAsyncCalls() {
                 second: "2-digit"
             };
             start_date_string = start_date.toLocaleDateString("de-DE", options);
-            end_date_string = end_date.toLocaleDateString("de-DE", options);
+            end_date_string = "-";
+            if (row.check_out){
+                end_date_string = end_date.toLocaleDateString("de-DE", options);
+            }
 
             // console.log(start_date_string);
             // console.log(end_date_string);
