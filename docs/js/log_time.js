@@ -72,7 +72,7 @@ function create_labelString(recent_row, insert_data) {
     insert_data = insert_data[0];
 
     // Generate time string:
-    let time = recent_row.created_at;
+    let time = insert_data.created_at;
 
     if (insert_data.check_out) {
         time = insert_data.check_out;
