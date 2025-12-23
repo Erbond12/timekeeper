@@ -8,18 +8,50 @@
     <body>
         <h1>Zeiten Tabelle</h1>
 
+        <label for="start">Start Datum:</label>
+
+        <input
+            type="date"
+            id="startDate"
+            value="2018-07-22"
+            min="2018-12-31" 
+        />
+        <label> &ThickSpace; End Datum:</label>
+        <input
+            type="date"
+            id="endDate"
+            value="2018-07-22"
+            min="2018-12-31" 
+        />
+        <button onclick="processAsyncCalls()">Tabelle neu laden</button>
+        
+        <br><br>
+        
         <table id="table" border="5">
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Check-In</th>
-                    <th>Check-Out</th>
+                    <th colspan="3">Check-In</th>
+                    <th colspan="3">Check-Out</th>
                     <th>Differenz</th>
                     <th>Pünktlichkeit</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th>Datum</th>
+                    <th>Tag</th>
+                    <th>Uhrzeit</th>
+                    <th>Datum</th>
+                    <th>Tag</th>
+                    <th>Uhrzeit</th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
+        <br>
+        <label id="pause"></label>
         <br>
         <button onclick="location.href='html/log_time.html'" >Check-In</button>
 

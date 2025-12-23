@@ -9,6 +9,18 @@
 
 // table needs to take 
 
+
+// fix pause feature
+// add date selector
+// save gender in db
+// show people as buttons to load the second table with only their entries
+// add css stylings
+// make it responsive for phone ui
+
+// Do those without a chck-out time still get displayed? -> no they cause an exception
+
+// Change the date input for a datetime-local input (https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/datetime-local)
+
 function getCookie(cookie_name) {
     const cookies = document.cookie.split('; ');
     const varCookie = cookies.find(row => row.startsWith(cookie_name + '='));
@@ -28,19 +40,15 @@ function getCookie(cookie_name) {
     return value;
 }
 
-async function fetchRows() {
-    //temp
-    const today = new Date().toISOString().split("T")[0];
 
-    const startDate = today; //"2025-11-18";
-    const endDate = today; //"2025-11-18";
+async function fetchRows(start, end, person) {
 
     const {data, error} = await supabaseClient
                 .from('Time')
                 .select('*')
                 .order('created_at', { ascending: true} )
-                .gte('created_at', startDate + 'T00:00:00Z')
-                .lt('created_at', endDate + 'T23:59:59Z');
+                .gte('created_at', start + 'T00:00:00Z')
+                .lt('created_at', end + 'T23:59:59Z');
 
     if (error) {
         throw error; // send this to the catch.
@@ -67,89 +75,166 @@ const SUPABASE_URL = 'https://' + db_id + '.supabase.co';
 const SUPABASE_ANON_KEY = db_key;
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+
+// temporary
+const today_year = new Date().toISOString().split("T")[0];
+tmp = "2025-11-20";
+
+// Initialize the start/end date selectors (input tag in the html)
+const start_date_in = document.getElementById("startDate");
+const end_date_in = document.getElementById("endDate");
+start_date_in.value = tmp; // todo temporaray
+end_date_in.value = tmp;  // todo temporaray
+start_date_in.max = today_year;
+end_date_in.max = today_year;
+
+
 async function processAsyncCalls() {
     try{
-        const rows = await fetchRows();
+        document.getElementById("table").querySelector("tbody").innerHTML = "";
+
+        // Get all rows for the selected time frame from db
+        const rows = await fetchRows(start_date_in.value, end_date_in.value);
         console.log(rows);
 
+        // Get a list of people that could have checked-in / -out
         const people = await fetchPeople()
         console.log(people);
 
-        const name_time_table = people.reduce( (accumulator, item) => {
+        // Create an object that has the people names as keys and init value of 0 as value
+        // i.e. { John: 0, Jim: 0, ...}
+        const time_remainder_by_person = people.reduce( (accumulator, item) => {
             accumulator[item.name] = 0;
             return accumulator;
         }, {} );
+        console.log(time_remainder_by_person);
         
-        console.log(name_time_table);
+        // Has the check_out value of the first row, that is owned by that person -> due to 
+        // how rows are fetched that will be the oldest entry:
+        //     Shape of breaks object: { People.name: {check_out: timestamp} }
+        //     { John: {check_out: "2025-01-01T15:24:01.023Z"}, Jim: {check_out: "..."}, ...}
+        let breaks = {};
+        for (let name of Object.keys(time_remainder_by_person)) {
+            let check_out;
+            for (let row of rows) {
+                if (row.name === name) {
+                    if (check_out) {
+                        check_out = row.check_out;
+                        break;
+                    }
+                }
+            }
+            breaks[name] = {"check_out": check_out};
+        }
+        console.log(breaks)
+
+        // options for time creation:
+        const day_option = { weekday: "short" };
+        const date_option = {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        };
+        const time_option = {
+            hour: "2-digit",
+            minute: "2-digit",
+        };
+
 
         for (let row of rows) {
-            // console.log(row);
 
-            start_date = new Date(row.created_at);
-            end_date = "-";
+            // Load start and end timestamp (set the end to "-" if the check-out 
+            //                               timestamp is still missing)
+            // todo Use current time to calculate the differnce, but leave the check-out time as "-" if not present.
+            let start_timestamp = new Date(row.created_at);
+            let end_timestamp = "-";
             if (row.check_out){
-                end_date = new Date(row.check_out);
-            }
-            // creat more asthetic date for table
-            options = {
-                weekday: "short",
-                year: "numeric",
-                month: "numeric",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
-            };
-            start_date_string = start_date.toLocaleDateString("de-DE", options);
-            end_date_string = "-";
-            if (row.check_out){
-                end_date_string = end_date.toLocaleDateString("de-DE", options);
+                end_timestamp = new Date(Date.parse(row.check_out));
             }
 
-            // console.log(start_date_string);
-            // console.log(end_date_string);
-            // console.log(start_date);
-            // console.log(end_date);
+            //#region Create string for check-in and check-out date column entries (date, day, time)
+            const start_day = Intl.DateTimeFormat("de-DE", day_option).format(start_timestamp);
+            const start_date = Intl.DateTimeFormat("de-DE", date_option).format(start_timestamp);
+            const start_time = Intl.DateTimeFormat("de-DE", time_option).format(start_timestamp);
+            // todo if end_timestamp is "-" this code won't work -> catch this case with if clause
+            const end_day = Intl.DateTimeFormat("de-DE", day_option).format(end_timestamp);
+            const end_date = Intl.DateTimeFormat("de-DE", date_option).format(end_timestamp);
+            const end_time = Intl.DateTimeFormat("de-DE", time_option).format(end_timestamp);
+            //#endregion
 
+            // const end_day = "---"
+            // const end_date = "---"
+            // const end_time = "---"
+
+            //#region Calculate time difference between check-in and check-out 
             // convert difference from ms to min and hours
-            difference_ms = end_date - start_date;
+            difference_ms = end_timestamp - start_timestamp;
             difference_min = difference_ms / (1000 * 60);
             difference_h = difference_ms / (1000 * 60 * 60);
-            // console.log(difference_ms);
 
             // round to 2 decimal points
             difference_min = Number(difference_min.toFixed(2));
             difference_h = Number(difference_h.toFixed(2));
-            // console.log(difference_min);
-            // console.log(difference_h);
+            //#endregion
 
-            name_time_table[row.name] = difference_h;
+            // calculate breaks
+            time_remainder_by_person[row.name] += difference_h;
 
-            const punctual = difference_h - 7;
+            const punctual = ( time_remainder_by_person[row.name] - 7 ).toFixed(2);
 
+            //#region Insert data in table view
             const tbody = document.getElementById("table").querySelector("tbody");
             const tr = document.createElement("tr");
 
             tr.innerHTML = `<td>${row.name}</td>
-                            <td>${start_date_string}</td>
-                            <td>${end_date_string}</td>
+                            <td>${start_date}</td>
+                            <td>${start_day}</td>
+                            <td>${start_time}</td>
+                            <td>${end_date}</td>
+                            <td>${end_day}</td>
+                            <td>${end_time}</td>
                             <td>${difference_h}</td>
                             <td>${punctual}</td>`;
             tbody.appendChild(tr);
+            //#endregion
+
+            
+            // // calculate breaks:
+            // let break_date_string = breaks[name]["check_out"];
+            // if (break_date_string !== "-") {
+                
+            // }
+
+            const name = row.name;
+            let break_date_string = breaks[name]["check_out"];
+            break_date = new Date(break_date_string); // if row.check_out is not present, then this will fail
+            if (start_timestamp !== break_date && row.check_out && break_date_string !== "-") {
+                let pause_ms = start_timestamp - break_date;
+                console.log(start_date);
+                console.log(break_date);
+                breaks[name]["check_out"] = row.check_out;
+                console.log(pause_ms);
+                console.log(row);
+                console.log(breaks[name]);
+                breaks[name]["pause"] = pause_ms;
+            }
         }
+        // }
 
+        // console.log(breaks);
+        // const pause_label = document.getElementById("pause");
+        // let pause_text = "Pausen: ";
+        // for (person of Object.keys(breaks)) {
+        //     if (Number.isNaN(breaks[person]["pause"])) {
+        //         pause_text += person + ": - ,";
+        //     } else {
+        //         break_h = Math.floor(breaks[person]["pause"] / (1000 * 60 * 60));
+        //         break_min = Math.floor(breaks[person]["pause"] / (1000 * 60));
+        //         pause_text += person + ": " + break_h + ":" + break_min + ", ";
+        //     }
+        // }
+        // pause_label.textContent = pause_text;
 
-        // rows.forEach(row => {
-        //     const tr = document.createElement("tr");
-        //     tr.innerHTML = `<td>${row.name}</td>
-        //                     <td>${row.created_at}</td>
-        //                     <td>${row.created_at}</td>
-        //                     <td>${row.created_at}</td>
-        //                     <td>${row.created_at}</td>`;
-        //     tbody.appendChild(tr);
-        //     //TODO: refactor to save in and out of time log in one row -> retrieve row with in and add out time
-        //             // -> no individual rows for in and out -> less disk space waisted
-        // });
     } catch (err) {
         console.error('Async-Chain had an error:', err)
     }
